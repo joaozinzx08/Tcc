@@ -3,7 +3,8 @@ import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
 import CadastroPage from './pages/CadastroPage'
 import DashboardPage from './pages/DashboardPage'
-import Reclamacao from './pages/Reclamacao'
+import NovaReclamacaoPage from './pages/NovaReclamacaoPage'
+import ProtectedRoute from './components/ProtectedRoute'
 
 export default function App() {
   return (
@@ -11,8 +12,22 @@ export default function App() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/cadastro" element={<CadastroPage />} />
-      <Route path="/minhas-reclamacoes" element={<DashboardPage />} />
-      <Route path="/nova-Reclamacao" element={<Reclamacao />} />
+      <Route
+        path="/minhas-reclamacoes"
+        element={
+          <ProtectedRoute>
+            <DashboardPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/nova-reclamacao"
+        element={
+          <ProtectedRoute>
+            <NovaReclamacaoPage />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   )
 }

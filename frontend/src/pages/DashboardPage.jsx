@@ -1,20 +1,48 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Plus, Search } from 'lucide-react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import StatusBadge from '../components/StatusBadge'
-import { mockComplaints, STATUS } from '../data/mockData'
+import { STATUS } from '../data/mockData'
+import { api } from '../services/api'
 
 const filters = ['Todas', ...Object.keys(STATUS)]
 
 export default function DashboardPage() {
   const [activeFilter, setActiveFilter] = useState('Todas')
+  const [search, setSearch] = useState('')
+  const [complaints, setComplaints] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  const visibleComplaints =
-    activeFilter === 'Todas'
-      ? mockComplaints
-      : mockComplaints.filter((c) => c.status === activeFilter)
+  useEffect(() => {
+    async function loadComplaints() {
+      setLoading(true)
+      setError(null)
+      try {
+        const data = await api.getMyComplaints()
+        setComplaints(data)
+      } catch (err) {
+        setError(err.message || 'Não foi possível carregar suas reclamações.')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadComplaints()
+  }, [])
+
+  const visibleComplaints = complaints
+    .filter((c) => activeFilter === 'Todas' || c.status === activeFilter)
+    .filter((c) => {
+      const term = search.trim().toLowerCase()
+      if (!term) return true
+      return (
+        c.titulo?.toLowerCase().includes(term) ||
+        c.setor_relacionado?.toLowerCase().includes(term)
+      )
+    })
 
   return (
     <div className="min-h-screen bg-paper text-ink">
@@ -47,7 +75,9 @@ export default function DashboardPage() {
           />
           <input
             type="text"
-            placeholder="Buscar por título ou empresa"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar por título ou setor"
             className="w-full rounded-lg border border-ink/15 bg-white py-2.5 pl-10 pr-3.5 text-sm text-ink placeholder:text-ink/35 focus:border-teal-600"
           />
         </div>
@@ -73,42 +103,59 @@ export default function DashboardPage() {
           })}
         </div>
 
-        {/* Lista de reclamações */}
-        <div className="mt-8 space-y-3">
-          {visibleComplaints.length === 0 && (
-            <div className="rounded-xl border border-teal-100 bg-white p-10 text-center">
-              <p className="font-semibold text-ink">
-                Nenhuma reclamação com esse status.
-              </p>
-              <p className="mt-1 text-sm text-ink/55">
-                Tente outro filtro ou registre uma nova reclamação.
-              </p>
-            </div>
-          )}
+        {/* Estado de loading */}
+        {loading && (
+          <div className="mt-8 rounded-xl border border-teal-100 bg-white p-10 text-center">
+            <p className="text-sm text-ink/55">Carregando suas reclamações…</p>
+          </div>
+        )}
 
-          {visibleComplaints.map((complaint) => (
-            <Link
-              key={complaint.id}
-              to={`/reclamacao/${complaint.id}`}
-              className="block rounded-xl border border-teal-100 bg-white p-5 transition-colors hover:border-teal-400"
-            >
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <p className="font-mono text-xs text-ink/40">{complaint.id}</p>
-                  <h3 className="mt-1 font-bold text-ink">{complaint.title}</h3>
-                  <p className="mt-1 text-sm text-ink/55">
-                    {complaint.company} · {complaint.category}
-                  </p>
-                </div>
-                <StatusBadge status={complaint.status} />
+        {/* Estado de erro */}
+        {!loading && error && (
+          <div className="mt-8 rounded-xl border border-coral-200 bg-coral-50 p-10 text-center">
+            <p className="font-semibold text-ink">Não deu pra carregar agora</p>
+            <p className="mt-1 text-sm text-ink/55">{error}</p>
+          </div>
+        )}
+
+        {/* Lista de reclamações */}
+        {!loading && !error && (
+          <div className="mt-8 space-y-3">
+            {visibleComplaints.length === 0 && (
+              <div className="rounded-xl border border-teal-100 bg-white p-10 text-center">
+                <p className="font-semibold text-ink">
+                  Nenhuma reclamação com esse status.
+                </p>
+                <p className="mt-1 text-sm text-ink/55">
+                  Tente outro filtro ou registre uma nova reclamação.
+                </p>
               </div>
-              <p className="mt-3 text-xs text-ink/40">
-                Aberta em{' '}
-                {new Date(complaint.createdAt).toLocaleDateString('pt-BR')}
-              </p>
-            </Link>
-          ))}
-        </div>
+            )}
+
+            {visibleComplaints.map((complaint) => (
+              <Link
+                key={complaint.id}
+                to={`/reclamacao/${complaint.id}`}
+                className="block rounded-xl border border-teal-100 bg-white p-5 transition-colors hover:border-teal-400"
+              >
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <p className="font-mono text-xs text-ink/40">{complaint.protocolo}</p>
+                    <h3 className="mt-1 font-bold text-ink">{complaint.titulo}</h3>
+                    <p className="mt-1 text-sm text-ink/55">
+                      {complaint.setor_relacionado || 'Setor não informado'} · {complaint.categoria}
+                    </p>
+                  </div>
+                  <StatusBadge status={complaint.status} />
+                </div>
+                <p className="mt-3 text-xs text-ink/40">
+                  Aberta em{' '}
+                  {new Date(complaint.createdAt).toLocaleDateString('pt-BR')}
+                </p>
+              </Link>
+            ))}
+          </div>
+        )}
       </section>
 
       <Footer />
