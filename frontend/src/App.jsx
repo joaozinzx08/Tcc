@@ -4,6 +4,7 @@ import LoginPage from './pages/LoginPage'
 import CadastroPage from './pages/CadastroPage'
 import DashboardPage from './pages/DashboardPage'
 import NovaReclamacaoPage from './pages/NovaReclamacaoPage'
+import DetalheReclamacaoPage from './pages/DetalheReclamacaoPage'
 import ProtectedRoute from './components/ProtectedRoute'
 
 export default function App() {
@@ -25,6 +26,14 @@ export default function App() {
         element={
           <ProtectedRoute>
             <NovaReclamacaoPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/reclamacao/:id"
+        element={
+          <ProtectedRoute>
+            <DetalheReclamacaoPage />
           </ProtectedRoute>
         }
       />
