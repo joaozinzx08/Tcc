@@ -3,6 +3,7 @@ const Employee = require('./Employee');
 const Complaint = require('./Complaint');
 const ComplaintResponse = require('./ComplaintResponse');
 const Announcement = require('./Announcement');
+const Feedback = require('./Feedback');
 
 // Um colaborador tem várias reclamações
 Employee.hasMany(Complaint, { foreignKey: 'employee_id' });
@@ -20,10 +21,19 @@ ComplaintResponse.belongsTo(Employee, { foreignKey: 'autor_id' });
 Employee.hasMany(Announcement, { foreignKey: 'autor_id' });
 Announcement.belongsTo(Employee, { foreignKey: 'autor_id' });
 
+// Um colaborador dá vários feedbacks
+Employee.hasMany(Feedback, { foreignKey: 'employee_id' });
+Feedback.belongsTo(Employee, { foreignKey: 'employee_id' });
+
+// Um feedback do tipo "avaliacao_reclamacao" pode estar vinculado a uma reclamação
+Complaint.hasOne(Feedback, { foreignKey: 'complaint_id' });
+Feedback.belongsTo(Complaint, { foreignKey: 'complaint_id' });
+
 module.exports = {
   sequelize,
   Employee,
   Complaint,
   ComplaintResponse,
   Announcement,
+  Feedback,
 };

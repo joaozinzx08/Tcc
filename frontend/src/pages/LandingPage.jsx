@@ -9,6 +9,7 @@ import {
   FileText,
   Bell,
   Reply,
+  LogIn,
 } from 'lucide-react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
@@ -36,29 +37,33 @@ export default function LandingPage() {
             <TrendingUp size={16} />
             8 de cada 10 casos resolvidos em até 5 dias
           </div>
+
           <h1 className="text-[2.6rem] font-extrabold leading-[1.12] tracking-tight text-ink md:text-5xl">
             Sua reclamação sai do papel e vira{' '}
             <span className="text-teal-600">solução registrada</span>.
           </h1>
+
           <p className="mx-auto mt-6 max-w-lg text-lg leading-relaxed text-ink/60">
             O Resolva Já organiza sua reclamação, notifica o setor responsável e
             mantém todo o histórico documentado — do primeiro contato até a
             avaliação final.
           </p>
+
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
             <Link
-              to="/cadastro"
+              to="/login"
               className="inline-flex items-center gap-2 rounded-lg bg-teal-600 px-6 py-3.5 font-semibold text-paper transition-colors hover:bg-teal-800"
             >
-              Abrir reclamação
+              Fazer login
               <ArrowRight size={18} />
             </Link>
-            <Link
-              to="/login"
+
+            <a
+              href="#como-funciona"
               className="rounded-lg border border-ink/15 bg-white px-6 py-3.5 font-semibold text-ink transition-colors hover:border-ink/30"
             >
-              Já tenho conta
-            </Link>
+              Como funciona
+            </a>
           </div>
         </div>
       </section>
@@ -68,11 +73,21 @@ export default function LandingPage() {
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-8 sm:grid-cols-4">
           {mockStatsBar.map((stat) => {
             const Icon = iconMap[stat.icon]
+
             return (
               <div key={stat.label} className="text-center sm:text-left">
-                <Icon className="mx-auto mb-2 text-amber-400 sm:mx-0" size={22} />
-                <p className="text-2xl font-extrabold text-ink">{stat.value}</p>
-                <p className="text-sm text-ink/55">{stat.label}</p>
+                <Icon
+                  className="mx-auto mb-2 text-amber-400 sm:mx-0"
+                  size={22}
+                />
+
+                <p className="text-2xl font-extrabold text-ink">
+                  {stat.value}
+                </p>
+
+                <p className="text-sm text-ink/55">
+                  {stat.label}
+                </p>
               </div>
             )
           })}
@@ -80,11 +95,15 @@ export default function LandingPage() {
       </section>
 
       {/* Como funciona */}
-      <section className="bg-teal-50/40 px-6 py-20">
+      <section
+        id="como-funciona"
+        className="scroll-mt-20 bg-teal-50/40 px-6 py-20"
+      >
         <div className="mx-auto max-w-6xl">
           <h2 className="text-3xl font-extrabold tracking-tight text-ink">
             Como funciona
           </h2>
+
           <p className="mt-2 max-w-xl text-ink/60">
             Quatro etapas simples, com prazos claros e histórico auditável.
           </p>
@@ -92,6 +111,7 @@ export default function LandingPage() {
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {howItWorks.map((step) => {
               const Icon = iconMap[step.icon]
+
               return (
                 <div
                   key={step.n}
@@ -101,11 +121,16 @@ export default function LandingPage() {
                     <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-teal-100 text-teal-600">
                       <Icon size={20} />
                     </span>
+
                     <span className="text-sm font-medium text-ink/25">
                       {step.n}
                     </span>
                   </div>
-                  <h3 className="font-bold text-ink">{step.title}</h3>
+
+                  <h3 className="font-bold text-ink">
+                    {step.title}
+                  </h3>
+
                   <p className="mt-1.5 text-sm leading-relaxed text-ink/55">
                     {step.text}
                   </p>
@@ -131,14 +156,26 @@ export default function LandingPage() {
               >
                 <div className="mb-3 flex gap-0.5 text-amber-400">
                   {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} size={16} fill="currentColor" strokeWidth={0} />
+                    <Star
+                      key={i}
+                      size={16}
+                      fill="currentColor"
+                      strokeWidth={0}
+                    />
                   ))}
                 </div>
+
                 <p className="text-[15px] leading-relaxed text-ink/75">
                   “{t.quote}”
                 </p>
-                <p className="mt-4 text-sm font-semibold text-ink">{t.name}</p>
-                <p className="text-sm text-ink/45">{t.location}</p>
+
+                <p className="mt-4 text-sm font-semibold text-ink">
+                  {t.name}
+                </p>
+
+                <p className="text-sm text-ink/45">
+                  {t.location}
+                </p>
               </div>
             ))}
           </div>
@@ -148,19 +185,26 @@ export default function LandingPage() {
       {/* CTA final */}
       <section className="px-6 py-16">
         <div className="mx-auto max-w-6xl rounded-2xl bg-teal-600 px-8 py-16 text-center text-paper md:px-16">
+          <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-white/15">
+            <LogIn size={24} />
+          </div>
+
           <h2 className="text-3xl font-extrabold tracking-tight md:text-4xl">
-            Pronto para resolver seu problema?
+            Já faz parte da empresa?
           </h2>
+
           <p className="mx-auto mt-3 max-w-lg text-paper/80">
-            Crie sua conta e registre sua primeira reclamação em menos de dois
-            minutos.
+            Acesse sua conta com sua matrícula e senha para registrar
+            reclamações, acompanhar solicitações e visualizar respostas.
           </p>
+
           <div className="mt-8 flex justify-center">
             <Link
-              to="/cadastro"
-              className="rounded-lg bg-amber-400 px-6 py-3.5 font-semibold text-ink transition-colors hover:bg-amber-600"
+              to="/login"
+              className="inline-flex items-center gap-2 rounded-lg bg-amber-400 px-6 py-3.5 font-semibold text-ink transition-colors hover:bg-amber-500"
             >
-              Criar conta
+              Fazer login
+              <ArrowRight size={18} />
             </Link>
           </div>
         </div>

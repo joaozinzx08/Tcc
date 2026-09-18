@@ -1,17 +1,23 @@
 import { NavLink, useNavigate } from 'react-router-dom'
-import { FileText, PlusCircle, MessageSquare, LogOut } from 'lucide-react'
+import {
+  FileText,
+  PlusCircle,
+  MessageSquare,
+  MessageCircleHeart,
+  LogOut,
+} from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
 export default function Sidebar() {
   const { colaborador, logout } = useAuth()
   const navigate = useNavigate()
 
- function handleLogout() {
-  navigate('/')
-  setTimeout(() => {
-    logout()
-  }, 0)
-}
+  function handleLogout() {
+    navigate('/')
+    setTimeout(() => {
+      logout()
+    }, 0)
+  }
 
   const iniciais = colaborador?.nome
     ?.split(' ')
@@ -21,9 +27,26 @@ export default function Sidebar() {
     .toUpperCase()
 
   const navItems = [
-    { to: '/minhas-reclamacoes', label: 'Minhas reclamações', icon: FileText },
-    { to: '/nova-reclamacao', label: 'Nova reclamação', icon: PlusCircle },
-    { to: '/respostas', label: 'Respostas', icon: MessageSquare },
+    {
+      to: '/minhas-reclamacoes',
+      label: 'Minhas reclamações',
+      icon: FileText,
+    },
+    {
+      to: '/nova-reclamacao',
+      label: 'Nova reclamação',
+      icon: PlusCircle,
+    },
+    {
+      to: '/respostas',
+      label: 'Respostas',
+      icon: MessageSquare,
+    },
+    {
+      to: '/feedback',
+      label: 'Feedback',
+      icon: MessageCircleHeart,
+    },
   ]
 
   return (
@@ -44,11 +67,15 @@ export default function Sidebar() {
             {iniciais || '?'}
           </div>
         )}
+
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold text-ink">
             {colaborador?.nome || 'Meu perfil'}
           </p>
-          <p className="truncate text-xs text-ink/50">{colaborador?.setor}</p>
+
+          <p className="truncate text-xs text-ink/50">
+            {colaborador?.setor}
+          </p>
         </div>
       </NavLink>
 

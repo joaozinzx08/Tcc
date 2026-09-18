@@ -17,6 +17,7 @@ export default function Header() {
           <span className="flex h-9 w-9 items-center justify-center rounded-full bg-teal-600 text-paper">
             <ShieldCheck size={18} />
           </span>
+
           <span className="text-lg font-bold tracking-tight text-ink">
             Resolva Já
           </span>
@@ -38,18 +39,12 @@ export default function Header() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-5">
+        <div className="flex items-center">
           <Link
             to="/login"
-            className="hidden text-[15px] font-medium text-ink/70 hover:text-ink sm:block"
+            className="hidden rounded-lg bg-teal-600 px-5 py-2.5 text-[15px] font-semibold text-white shadow-sm transition-all hover:bg-teal-700 hover:shadow-md sm:inline-flex"
           >
             Entrar
-          </Link>
-          <Link
-            to="/cadastro"
-            className="rounded-lg bg-amber-400 px-4 py-2.5 text-[15px] font-semibold text-ink transition-colors hover:bg-amber-600 hover:text-paper"
-          >
-            Criar conta
           </Link>
         </div>
       </div>
