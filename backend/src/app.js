@@ -28,7 +28,7 @@ async function start() {
     await sequelize.authenticate();
     console.log('✅ Conectado ao SQLite com sucesso.');
 
-    await sequelize.sync();
+    await sequelize.sync({ alter: true });
 
     app.listen(PORT, () => {
       console.log(`Servidor rodando em http://localhost:${PORT}`);

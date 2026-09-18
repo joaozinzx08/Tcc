@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import Header from '../components/Header'
@@ -11,23 +11,47 @@ export default function DetalheReclamacaoPage() {
   const [complaint, setComplaint] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [mensagem, setMensagem] = useState('')
+  const [enviando, setEnviando] = useState(false)
+  const [erroResposta, setErroResposta] = useState(null)
+
+  const loadComplaint = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+
+    try {
+      const data = await api.getComplaint(id)
+      setComplaint(data)
+    } catch (err) {
+      setError(err.message || 'Não foi possível carregar esta reclamação.')
+    } finally {
+      setLoading(false)
+    }
+  }, [id])
 
   useEffect(() => {
-    async function loadComplaint() {
-      setLoading(true)
-      setError(null)
-      try {
-        const data = await api.getComplaint(id)
-        setComplaint(data)
-      } catch (err) {
-        setError(err.message || 'Não foi possível carregar esta reclamação.')
-      } finally {
-        setLoading(false)
-      }
-    }
-
     loadComplaint()
-  }, [id])
+  }, [loadComplaint])
+
+  async function handleAddResponse(e) {
+    e.preventDefault()
+
+    const texto = mensagem.trim()
+    if (!texto || enviando) return
+
+    setEnviando(true)
+    setErroResposta(null)
+
+    try {
+      await api.addComplaintResponse(id, texto)
+      setMensagem('')
+      await loadComplaint()
+    } catch (err) {
+      setErroResposta(err.message || 'Não foi possível enviar a resposta.')
+    } finally {
+      setEnviando(false)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-paper text-ink">
@@ -60,14 +84,19 @@ export default function DetalheReclamacaoPage() {
             <div className="mt-6 rounded-xl border border-teal-100 bg-white p-6">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <p className="font-mono text-xs text-ink/40">{complaint.protocolo}</p>
+                  <p className="font-mono text-xs text-ink/40">
+                    {complaint.protocolo}
+                  </p>
+
                   <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-ink">
                     {complaint.titulo}
                   </h1>
+
                   <p className="mt-1.5 text-sm text-ink/55">
                     {complaint.setor_relacionado || 'Setor não informado'} · {complaint.categoria}
                   </p>
                 </div>
+
                 <StatusBadge status={complaint.status} />
               </div>
 
@@ -103,14 +132,55 @@ export default function DetalheReclamacaoPage() {
                       <p className="text-sm font-semibold text-ink">
                         {response.Employee?.nome || 'RH'}
                       </p>
+
                       <p className="text-xs text-ink/40">
                         {new Date(response.createdAt).toLocaleDateString('pt-BR')}
                       </p>
                     </div>
-                    <p className="mt-1.5 text-sm text-ink/75">{response.mensagem}</p>
+
+                    <p className="mt-1.5 whitespace-pre-wrap text-sm text-ink/75">
+                      {response.mensagem}
+                    </p>
                   </div>
                 ))}
               </div>
+
+              <form
+                onSubmit={handleAddResponse}
+                className="mt-5 rounded-xl border border-teal-100 bg-white p-4"
+              >
+                <label
+                  htmlFor="mensagem"
+                  className="mb-1.5 block text-sm font-medium text-ink"
+                >
+                  Adicionar resposta
+                </label>
+
+                <textarea
+                  id="mensagem"
+                  value={mensagem}
+                  onChange={(e) => setMensagem(e.target.value)}
+                  rows={3}
+                  placeholder="Escreva uma atualização ou resposta..."
+                  required
+                  disabled={enviando}
+                  className="w-full resize-none rounded-lg border border-ink/15 bg-white px-3.5 py-2.5 text-sm text-ink placeholder:text-ink/35 focus:border-teal-600 disabled:opacity-60"
+                />
+
+                {erroResposta && (
+                  <p role="alert" className="mt-2 text-sm text-red-500">
+                    {erroResposta}
+                  </p>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={enviando || !mensagem.trim()}
+                  className="mt-3 rounded-lg bg-teal-600 px-5 py-2.5 text-sm font-semibold text-paper transition-colors hover:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {enviando ? 'Enviando...' : 'Enviar resposta'}
+                </button>
+              </form>
             </div>
           </>
         )}

@@ -52,13 +52,18 @@ async function createEmployee(req, res) {
   const { matricula, senha, nome, setor, cargo, role } = req.body;
 
   if (!matricula || !senha || !nome) {
-    return res.status(400).json({ erro: 'Matrícula, senha e nome são obrigatórios.' });
+    return res.status(400).json({
+      erro: 'Matrícula, senha e nome são obrigatórios.',
+    });
   }
 
   try {
     const existente = await Employee.findOne({ where: { matricula } });
+
     if (existente) {
-      return res.status(409).json({ erro: 'Já existe um colaborador com essa matrícula.' });
+      return res.status(409).json({
+        erro: 'Já existe um colaborador com essa matrícula.',
+      });
     }
 
     const senha_hash = await bcrypt.hash(senha, 10);
@@ -83,4 +88,64 @@ async function createEmployee(req, res) {
   }
 }
 
-module.exports = { login, createEmployee };
+// Ver os próprios dados
+async function getMe(req, res) {
+  try {
+    const employee = await Employee.findByPk(req.employee.id, {
+      attributes: {
+        exclude: ['senha_hash'],
+      },
+    });
+
+    if (!employee) {
+      return res.status(404).json({
+        erro: 'Colaborador não encontrado.',
+      });
+    }
+
+    res.json(employee);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      erro: 'Erro ao buscar perfil.',
+    });
+  }
+}
+
+// Editar os próprios dados
+async function updateMe(req, res) {
+  const { email, telefone, foto_url } = req.body;
+
+  try {
+    const employee = await Employee.findByPk(req.employee.id);
+
+    if (!employee) {
+      return res.status(404).json({
+        erro: 'Colaborador não encontrado.',
+      });
+    }
+
+    await employee.update({
+      email: email ?? employee.email,
+      telefone: telefone ?? employee.telefone,
+      foto_url: foto_url ?? employee.foto_url,
+    });
+
+    // Remove a senha antes de devolver os dados
+    const { senha_hash, ...dadosPublicos } = employee.toJSON();
+
+    res.json(dadosPublicos);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      erro: 'Erro ao atualizar perfil.',
+    });
+  }
+}
+
+module.exports = {
+  login,
+  createEmployee,
+  getMe,
+  updateMe,
+};

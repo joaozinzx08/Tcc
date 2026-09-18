@@ -39,6 +39,7 @@ async function listMyComplaints(req, res) {
   try {
     const complaints = await Complaint.findAll({
       where: { employee_id: req.employee.id },
+      include: [{ model: ComplaintResponse, include: [Employee] }],
       order: [['createdAt', 'DESC']],
     });
 

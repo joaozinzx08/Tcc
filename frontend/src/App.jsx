@@ -5,38 +5,33 @@ import CadastroPage from './pages/CadastroPage'
 import DashboardPage from './pages/DashboardPage'
 import NovaReclamacaoPage from './pages/NovaReclamacaoPage'
 import DetalheReclamacaoPage from './pages/DetalheReclamacaoPage'
+import RespostasPage from './pages/RespostasPage'
+import PerfilPage from './pages/PerfilPage'
 import ProtectedRoute from './components/ProtectedRoute'
+import AppLayout from './components/AppLayout'
 
 export default function App() {
   return (
     <Routes>
+      {/* Sem sidebar */}
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/cadastro" element={<CadastroPage />} />
+
+      {/* Com sidebar — protegido por login */}
       <Route
-        path="/minhas-reclamacoes"
         element={
           <ProtectedRoute>
-            <DashboardPage />
+            <AppLayout />
           </ProtectedRoute>
         }
-      />
-      <Route
-        path="/nova-reclamacao"
-        element={
-          <ProtectedRoute>
-            <NovaReclamacaoPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/reclamacao/:id"
-        element={
-          <ProtectedRoute>
-            <DetalheReclamacaoPage />
-          </ProtectedRoute>
-        }
-      />
+      >
+        <Route path="/minhas-reclamacoes" element={<DashboardPage />} />
+        <Route path="/nova-reclamacao" element={<NovaReclamacaoPage />} />
+        <Route path="/reclamacao/:id" element={<DetalheReclamacaoPage />} />
+        <Route path="/respostas" element={<RespostasPage />} />
+        <Route path="/perfil" element={<PerfilPage />} />
+      </Route>
     </Routes>
   )
 }

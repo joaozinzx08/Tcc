@@ -9,7 +9,11 @@ async function request(endpoint, options = {}) {
     ...options.headers,
   };
 
-  const response = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
+  const response = await fetch(`${API_URL}${endpoint}`, {
+    ...options,
+    headers,
+  });
+
   const data = await response.json();
 
   if (!response.ok) {
@@ -21,20 +25,43 @@ async function request(endpoint, options = {}) {
 
 export const api = {
   login: (matricula, senha) =>
-    request('/auth/login', { method: 'POST', body: JSON.stringify({ matricula, senha }) }),
+    request('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ matricula, senha }),
+    }),
 
+  // PERFIL
+  getMe: () => request('/auth/me'),
+
+  updateMe: (payload) =>
+    request('/auth/me', {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    }),
+
+  // RECLAMAÇÕES
   getMyComplaints: () => request('/complaints'),
 
   getComplaint: (id) => request(`/complaints/${id}`),
 
   createComplaint: (payload) =>
-    request('/complaints', { method: 'POST', body: JSON.stringify(payload) }),
+    request('/complaints', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
 
   updateComplaintStatus: (id, status) =>
-    request(`/complaints/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
+    request(`/complaints/${id}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    }),
 
   addComplaintResponse: (id, mensagem) =>
-    request(`/complaints/${id}/responses`, { method: 'POST', body: JSON.stringify({ mensagem }) }),
+    request(`/complaints/${id}/responses`, {
+      method: 'POST',
+      body: JSON.stringify({ mensagem }),
+    }),
 
+  // COMUNICADOS
   getAnnouncements: () => request('/announcements'),
 };
