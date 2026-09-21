@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Plus, Search } from 'lucide-react'
-import Header from '../components/Header'
-import Footer from '../components/Footer'
 import StatusBadge from '../components/StatusBadge'
 import { STATUS } from '../data/mockData'
 import { api } from '../services/api'
@@ -20,11 +18,15 @@ export default function DashboardPage() {
     async function loadComplaints() {
       setLoading(true)
       setError(null)
+
       try {
         const data = await api.getMyComplaints()
         setComplaints(data)
       } catch (err) {
-        setError(err.message || 'Não foi possível carregar suas reclamações.')
+        setError(
+          err.message ||
+            'Não foi possível carregar suas reclamações.'
+        )
       } finally {
         setLoading(false)
       }
@@ -34,10 +36,16 @@ export default function DashboardPage() {
   }, [])
 
   const visibleComplaints = complaints
-    .filter((c) => activeFilter === 'Todas' || c.status === activeFilter)
+    .filter(
+      (c) =>
+        activeFilter === 'Todas' ||
+        c.status === activeFilter
+    )
     .filter((c) => {
       const term = search.trim().toLowerCase()
+
       if (!term) return true
+
       return (
         c.titulo?.toLowerCase().includes(term) ||
         c.setor_relacionado?.toLowerCase().includes(term)
@@ -46,18 +54,18 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-paper text-ink">
-      <Header />
-
       <section className="mx-auto max-w-6xl px-6 py-12">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-extrabold tracking-tight text-ink">
               Minhas reclamações
             </h1>
+
             <p className="mt-1.5 text-ink/60">
               Acompanhe o andamento de cada protocolo aberto.
             </p>
           </div>
+
           <Link
             to="/nova-reclamacao"
             className="inline-flex items-center gap-2 rounded-lg bg-teal-600 px-5 py-3 font-semibold text-paper transition-colors hover:bg-teal-800"
@@ -73,6 +81,7 @@ export default function DashboardPage() {
             size={18}
             className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink/35"
           />
+
           <input
             type="text"
             value={search}
@@ -82,15 +91,22 @@ export default function DashboardPage() {
           />
         </div>
 
-        {/* Filtros por status */}
+        {/* Filtros */}
         <div className="mt-5 flex flex-wrap gap-2">
           {filters.map((filter) => {
-            const label = filter === 'Todas' ? 'Todas' : STATUS[filter].label
+            const label =
+              filter === 'Todas'
+                ? 'Todas'
+                : STATUS[filter].label
+
             const isActive = activeFilter === filter
+
             return (
               <button
                 key={filter}
-                onClick={() => setActiveFilter(filter)}
+                onClick={() =>
+                  setActiveFilter(filter)
+                }
                 className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
                   isActive
                     ? 'bg-teal-600 text-paper'
@@ -103,22 +119,29 @@ export default function DashboardPage() {
           })}
         </div>
 
-        {/* Estado de loading */}
+        {/* Loading */}
         {loading && (
           <div className="mt-8 rounded-xl border border-teal-100 bg-white p-10 text-center">
-            <p className="text-sm text-ink/55">Carregando suas reclamações…</p>
+            <p className="text-sm text-ink/55">
+              Carregando suas reclamações…
+            </p>
           </div>
         )}
 
-        {/* Estado de erro */}
+        {/* Erro */}
         {!loading && error && (
           <div className="mt-8 rounded-xl border border-coral-200 bg-coral-50 p-10 text-center">
-            <p className="font-semibold text-ink">Não deu pra carregar agora</p>
-            <p className="mt-1 text-sm text-ink/55">{error}</p>
+            <p className="font-semibold text-ink">
+              Não deu pra carregar agora
+            </p>
+
+            <p className="mt-1 text-sm text-ink/55">
+              {error}
+            </p>
           </div>
         )}
 
-        {/* Lista de reclamações */}
+        {/* Reclamações */}
         {!loading && !error && (
           <div className="mt-8 space-y-3">
             {visibleComplaints.length === 0 && (
@@ -126,8 +149,10 @@ export default function DashboardPage() {
                 <p className="font-semibold text-ink">
                   Nenhuma reclamação com esse status.
                 </p>
+
                 <p className="mt-1 text-sm text-ink/55">
-                  Tente outro filtro ou registre uma nova reclamação.
+                  Tente outro filtro ou registre uma nova
+                  reclamação.
                 </p>
               </div>
             )}
@@ -140,25 +165,37 @@ export default function DashboardPage() {
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <p className="font-mono text-xs text-ink/40">{complaint.protocolo}</p>
-                    <h3 className="mt-1 font-bold text-ink">{complaint.titulo}</h3>
+                    <p className="font-mono text-xs text-ink/40">
+                      {complaint.protocolo}
+                    </p>
+
+                    <h3 className="mt-1 font-bold text-ink">
+                      {complaint.titulo}
+                    </h3>
+
                     <p className="mt-1 text-sm text-ink/55">
-                      {complaint.setor_relacionado || 'Setor não informado'} · {complaint.categoria}
+                      {complaint.setor_relacionado ||
+                        'Setor não informado'}{' '}
+                      · {complaint.categoria}
                     </p>
                   </div>
-                  <StatusBadge status={complaint.status} />
+
+                  <StatusBadge
+                    status={complaint.status}
+                  />
                 </div>
+
                 <p className="mt-3 text-xs text-ink/40">
                   Aberta em{' '}
-                  {new Date(complaint.createdAt).toLocaleDateString('pt-BR')}
+                  {new Date(
+                    complaint.createdAt
+                  ).toLocaleDateString('pt-BR')}
                 </p>
               </Link>
             ))}
           </div>
         )}
       </section>
-
-      <Footer />
     </div>
   )
 }

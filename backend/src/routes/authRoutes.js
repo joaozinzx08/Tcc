@@ -4,19 +4,49 @@ const router = express.Router();
 
 const authMiddleware = require('../middlewares/authMiddleware');
 
+const roleMiddleware = require('../middlewares/roleMiddleware');
+
 const {
   login,
   createEmployee,
+  listEmployees,
   getMe,
   updateMe,
 } = require('../controllers/authController');
 
-router.post('/login', login);
+// Login público
+router.post(
+  '/login',
+  login
+);
 
-router.post('/employees', createEmployee); // depois vamos proteger essa rota só pra admin
+// Listar colaboradores
+router.get(
+  '/employees',
+  authMiddleware,
+  roleMiddleware('admin'),
+  listEmployees
+);
 
-router.get('/me', authMiddleware, getMe);
+// Criar colaborador
+router.post(
+  '/employees',
+  authMiddleware,
+  roleMiddleware('admin'),
+  createEmployee
+);
 
-router.put('/me', authMiddleware, updateMe);
+// Perfil
+router.get(
+  '/me',
+  authMiddleware,
+  getMe
+);
+
+router.put(
+  '/me',
+  authMiddleware,
+  updateMe
+);
 
 module.exports = router;

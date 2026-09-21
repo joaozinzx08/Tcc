@@ -1,7 +1,7 @@
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
-export default function ProtectedRoute({ children }) {
+export default function CollaboratorRoute({ children }) {
   const { colaborador, carregando } = useAuth()
 
   if (carregando) {
@@ -20,6 +20,10 @@ export default function ProtectedRoute({ children }) {
 
   if (!colaborador) {
     return <Navigate to="/login" replace />
+  }
+
+  if (colaborador.role === 'admin') {
+    return <Navigate to="/admin" replace />
   }
 
   return children
